@@ -9,6 +9,7 @@ import com.google.ai.client.generativeai.type.content
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,13 +20,26 @@ class ChatViewModel @Inject constructor(
 ) : ViewModel() {
 
     val messages = dao.getChatHistory()
+    private val files = dao.getFiles()
 
     fun sendMessage(text: String) {
         viewModelScope.launch {
             dao.insertMessage(ChatMessage(role = "user", content = text))
             
             try {
-                val response = generativeModel.generateContent(text)
+                // Fetch current files to provide as context
+                val currentFiles = files.first()
+                val projectContext = if (currentFiles.isEmpty()) {
+                    "The project is currently empty."
+                } else {
+                    "Current project files:\n" + currentFiles.joinToString("\n") { file ->
+                        "- ${file.path}${file.name} (${file.extension})"
+                    }
+                }
+
+                val fullPrompt = "Project Context:\n$projectContext\n\nUser Request: $text"
+                
+                val response = generativeModel.generateContent(fullPrompt)
                 val responseText = response.text ?: "No response"
                 dao.insertMessage(ChatMessage(role = "model", content = responseText))
                 
@@ -34,6 +48,12 @@ class ChatViewModel @Inject constructor(
             } catch (e: Exception) {
                 dao.insertMessage(ChatMessage(role = "model", content = "Error: ${e.message}"))
             }
+        }
+    }
+
+    fun clearChat() {
+        viewModelScope.launch {
+            dao.clearChat()
         }
     }
 

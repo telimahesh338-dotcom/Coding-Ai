@@ -10,8 +10,10 @@ data class ChatMessage(
     val content: String,
     val timestamp: Long = System.currentTimeMillis()
 )
-
-@Entity(tableName = "files")
+@Entity(
+    tableName = "files",
+    indices = [Index(value = ["name", "path"], unique = true)]
+)
 data class CodeFile(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
@@ -20,7 +22,6 @@ data class CodeFile(
     val path: String = "/"
 )
 
-@Dao
 interface CodeBotDao {
     @Query("SELECT * FROM chat_history ORDER BY timestamp ASC")
     fun getChatHistory(): Flow<List<ChatMessage>>
@@ -34,11 +35,14 @@ interface CodeBotDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveFile(file: CodeFile)
 
+    @Query("DELETE FROM chat_history")
+    suspend fun clearChat()
+
     @Delete
     suspend fun deleteFile(file: CodeFile)
 }
 
-@Database(entities = [ChatMessage::class, CodeFile::class], version = 2)
+@Database(entities = [ChatMessage::class, CodeFile::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dao(): CodeBotDao
 }

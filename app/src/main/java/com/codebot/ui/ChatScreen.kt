@@ -44,6 +44,9 @@ fun ChatScreen(
             TopAppBar(
                 title = { Text("CodeBot AI", style = MaterialTheme.typography.titleMedium) },
                 actions = {
+                    IconButton(onClick = { viewModel.clearChat() }) {
+                        Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color(0xFF94A3B8))
+                    }
                     IconButton(onClick = onNavigateToFiles) {
                         Icon(Icons.Default.Folder, contentDescription = "Files")
                     }
