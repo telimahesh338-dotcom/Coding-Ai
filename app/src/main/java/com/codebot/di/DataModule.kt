@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.codebot.data.AppDatabase
 import com.codebot.data.CodeBotDao
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
