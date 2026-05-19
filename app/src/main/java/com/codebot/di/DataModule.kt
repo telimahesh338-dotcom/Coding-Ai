@@ -33,9 +33,10 @@ object DataModule {
     @Provides
     @Singleton
     fun provideGenerativeModel(): GenerativeModel {
-        // The secrets-gradle-plugin provides this from local.properties or env vars
+        // Safe access to BuildConfig field
         val apiKey = try {
-            com.codebot.BuildConfig.GEMINI_API_KEY
+            val field = com.codebot.BuildConfig::class.java.getField("GEMINI_API_KEY")
+            field.get(null) as String
         } catch (e: Exception) {
             "YOUR_API_KEY_HERE"
         }

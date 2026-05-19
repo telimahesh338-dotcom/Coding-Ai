@@ -27,7 +27,9 @@ jobs:
           gradle-version: 8.10.2
 
       - name: Create dummy local.properties
-        run: echo "GEMINI_API_KEY=dummy" > local.properties
+        run: |
+          echo "GEMINI_API_KEY=dummy" > local.properties
+          echo "sdk.dir=$ANDROID_HOME" >> local.properties
 
       - name: Build with Gradle
         run: gradle assembleDebug --stacktrace --info --no-daemon
