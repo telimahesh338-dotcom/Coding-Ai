@@ -42,6 +42,16 @@ android {
         buildConfig = true
     }
 
+    secrets {
+        // Optionally specify a different file name containing your secrets.
+        // The default is "local.properties".
+        propertiesFileName = "local.properties"
+
+        // A list of properties that should be ignored from the generated BuildConfig class.
+        // ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+        // ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
+    }
+
     /*
      * To use a real Gemini API key:
      * 1. Add GEMINI_API_KEY=your_key to local.properties

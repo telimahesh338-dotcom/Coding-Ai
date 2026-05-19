@@ -33,13 +33,7 @@ object DataModule {
     @Provides
     @Singleton
     fun provideGenerativeModel(): GenerativeModel {
-        // Safe access to BuildConfig field
-        val apiKey = try {
-            val field = com.codebot.BuildConfig::class.java.getField("GEMINI_API_KEY")
-            field.get(null) as String
-        } catch (e: Exception) {
-            "YOUR_API_KEY_HERE"
-        }
+        val apiKey = com.codebot.BuildConfig.GEMINI_API_KEY
         
         return GenerativeModel(
             modelName = "gemini-1.5-flash",
