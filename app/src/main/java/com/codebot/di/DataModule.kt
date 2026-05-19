@@ -41,7 +41,13 @@ object DataModule {
         
         return GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey = apiKey
+            apiKey = apiKey,
+            systemInstruction = content {
+                text("You are an automated coding assistant for a mobile app. " +
+                     "When you provide code snippets, ALWAYS start the first line of the code block with a comment indicating the file path and name, like this: // @file: path/to/filename.ext " +
+                     "This allows the app to automatically save the file to the correct location. " +
+                     "If it's a web project, prioritize index.html, styles.css, and script.js.")
+            }
         )
     }
 }

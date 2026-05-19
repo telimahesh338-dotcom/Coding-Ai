@@ -69,8 +69,16 @@ fun EditorScreen(
                 items(files) { file ->
                     ListItem(
                         headlineContent = { Text(file.name, color = Color.White) },
-                        supportingContent = { Text(file.extension, color = Color(0xFF94A3B8)) },
-                        leadingContent = { Icon(Icons.Default.Code, contentDescription = null, tint = Color(0xFF38BDF8)) },
+                        supportingContent = { Text("${file.path}${file.name}", color = Color(0xFF64748B), style = MaterialTheme.typography.bodySmall) },
+                        leadingContent = { 
+                            val icon = when(file.extension.lowercase()) {
+                                "html" -> Icons.Default.Html
+                                "js", "javascript" -> Icons.Default.Javascript
+                                "css" -> Icons.Default.Css
+                                else -> Icons.Default.Description
+                            }
+                            Icon(icon, contentDescription = null, tint = Color(0xFF38BDF8)) 
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         trailingContent = {
