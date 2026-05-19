@@ -26,7 +26,7 @@ async function startServer() {
     try {
       const { message, history } = req.body;
       const model = ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-1.5-flash',
         contents: history ? [...history, { role: 'user', parts: [{ text: message }] }] : message
       });
       const response = await model;

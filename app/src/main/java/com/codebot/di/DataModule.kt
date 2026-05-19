@@ -36,7 +36,7 @@ object DataModule {
         val apiKey = com.codebot.BuildConfig.GEMINI_API_KEY
         
         return GenerativeModel(
-            modelName = "gemini-1.5-flash-latest",
+            modelName = "gemini-1.5-flash",
             apiKey = apiKey,
             systemInstruction = content {
                 text("You are an automated coding assistant for a mobile app. " +
