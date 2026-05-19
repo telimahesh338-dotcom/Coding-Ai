@@ -23,7 +23,7 @@ object DataModule {
             context,
             AppDatabase::class.java,
             "codebot_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

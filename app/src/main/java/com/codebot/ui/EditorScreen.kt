@@ -1,5 +1,7 @@
 package com.codebot.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +27,13 @@ fun EditorScreen(
 ) {
     val files by viewModel.files.collectAsState(initial = emptyList())
     val selectedFile by viewModel.selectedFile.collectAsState()
+    val context = LocalContext.current
+    
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        uri?.let {
+            viewModel.exportToDirectory(context, it)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -38,6 +48,10 @@ fun EditorScreen(
                     if (selectedFile != null) {
                         IconButton(onClick = onNavigateToPreview) {
                             Icon(Icons.Default.PlayArrow, contentDescription = "Run")
+                        }
+                    } else {
+                        IconButton(onClick = { launcher.launch(null) }) {
+                            Icon(Icons.Default.FolderZip, contentDescription = "Export to Phone")
                         }
                     }
                 },

@@ -16,7 +16,8 @@ data class CodeFile(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val content: String,
-    val extension: String
+    val extension: String,
+    val path: String = "/"
 )
 
 @Dao
@@ -37,7 +38,7 @@ interface CodeBotDao {
     suspend fun deleteFile(file: CodeFile)
 }
 
-@Database(entities = [ChatMessage::class, CodeFile::class], version = 1)
+@Database(entities = [ChatMessage::class, CodeFile::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dao(): CodeBotDao
 }

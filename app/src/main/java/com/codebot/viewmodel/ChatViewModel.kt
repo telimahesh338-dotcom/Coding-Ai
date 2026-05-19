@@ -28,8 +28,45 @@ class ChatViewModel @Inject constructor(
                 val response = generativeModel.generateContent(text)
                 val responseText = response.text ?: "No response"
                 dao.insertMessage(ChatMessage(role = "model", content = responseText))
+                
+                // Automatic Extraction
+                extractAndSaveFiles(responseText)
             } catch (e: Exception) {
                 dao.insertMessage(ChatMessage(role = "model", content = "Error: ${e.message}"))
+            }
+        }
+    }
+
+    private fun extractAndSaveFiles(text: String) {
+        val codeBlockRegex = Regex("```(\\w+)\\n([\\s\\S]*?)```")
+        codeBlockRegex.findAll(text).forEach { match ->
+            val lang = match.groupValues[1]
+            val content = match.groupValues[2]
+            
+            // Try to find a filename hint in the previous few lines or within the code
+            // Look for patterns like "File: filename.ext" or "// filename.ext"
+            var fileName = "snippet_${System.currentTimeMillis()}.$lang"
+            
+            if (lang == "html" || content.contains("<!DOCTYPE html>")) fileName = "index.html"
+            else if (lang == "javascript" || lang == "js") fileName = "script.js"
+            else if (lang == "css") fileName = "styles.css"
+            
+            // Check for file hint in the first line of content
+            val firstLine = content.lineSequence().firstOrNull() ?: ""
+            if (firstLine.contains("/") || firstLine.contains(".")) {
+                val potentialName = firstLine.replace("//", "").replace("/*", "").replace("*", "").trim()
+                if (potentialName.contains(".")) {
+                    fileName = potentialName
+                }
+            }
+
+            viewModelScope.launch {
+                dao.saveFile(com.codebot.data.CodeFile(
+                    name = fileName.substringAfterLast("/"),
+                    content = content,
+                    extension = fileName.substringAfterLast(".", lang),
+                    path = if (fileName.contains("/")) "/${fileName.substringBeforeLast("/")}/" else "/"
+                ))
             }
         }
     }

@@ -23,6 +23,9 @@ jobs:
         with:
           gradle-version: 8.10.2
 
+      - name: Create dummy local.properties
+        run: touch local.properties
+
       - name: Build with Gradle
         run: gradle assembleDebug
       
