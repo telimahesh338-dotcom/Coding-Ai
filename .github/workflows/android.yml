@@ -26,14 +26,14 @@ jobs:
         with:
           gradle-version: 8.10.2
 
-      - name: Create dummy local.properties
+      - name: Create local.properties
         run: |
-          echo "GEMINI_API_KEY=dummy" > local.properties
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > local.properties
           echo "sdk.dir=$ANDROID_HOME" >> local.properties
           cp local.properties app/local.properties
 
       - name: Build with Gradle
-        run: gradle assembleDebug --stacktrace --info --no-daemon -Pandroid.builder.sdkDownload=true
+        run: gradle assembleDebug --stacktrace --info --no-daemon -Pandroid.builder.sdkDownload=true -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
