@@ -33,7 +33,7 @@ jobs:
           cp local.properties app/local.properties
 
       - name: Build with Gradle
-        run: gradle assembleDebug --stacktrace --info --no-daemon -Pandroid.builder.sdkDownload=true -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+        run: gradle assembleDebug --stacktrace --info --no-daemon -Pandroid.builder.sdkDownload=true -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g" -Proom.schemaLocation="$PWD/app/schemas"
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
