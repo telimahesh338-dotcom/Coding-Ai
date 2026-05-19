@@ -51,7 +51,7 @@ fun EditorScreen(
                         }
                     } else {
                         IconButton(onClick = { launcher.launch(null) }) {
-                            Icon(Icons.Default.FolderZip, contentDescription = "Export to Phone")
+                            Icon(Icons.Default.FileDownload, contentDescription = "Export to Phone")
                         }
                     }
                 },
@@ -72,9 +72,7 @@ fun EditorScreen(
                         supportingContent = { Text("${file.path}${file.name}", color = Color(0xFF64748B), style = MaterialTheme.typography.bodySmall) },
                         leadingContent = { 
                             val icon = when(file.extension.lowercase()) {
-                                "html" -> Icons.Default.Html
-                                "js", "javascript" -> Icons.Default.Javascript
-                                "css" -> Icons.Default.Css
+                                "html", "js", "javascript", "css" -> Icons.Default.Code
                                 else -> Icons.Default.Description
                             }
                             Icon(icon, contentDescription = null, tint = Color(0xFF38BDF8)) 

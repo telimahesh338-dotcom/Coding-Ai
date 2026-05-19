@@ -99,7 +99,8 @@ class ChatViewModel @Inject constructor(
                     extension = fileName.substringAfterLast(".", lang),
                     path = if (fileName.contains("/")) {
                          val p = fileName.substringBeforeLast("/")
-                         if (p.startsWith("/")) p else "/$p"
+                         val normalized = if (p.startsWith("/")) p else "/$p"
+                         if (normalized.endsWith("/")) normalized else "$normalized/"
                     } else "/"
                 ))
             }

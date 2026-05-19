@@ -22,6 +22,7 @@ data class CodeFile(
     val path: String = "/"
 )
 
+@Dao
 interface CodeBotDao {
     @Query("SELECT * FROM chat_history ORDER BY timestamp ASC")
     fun getChatHistory(): Flow<List<ChatMessage>>
