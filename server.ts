@@ -25,11 +25,12 @@ async function startServer() {
   app.post('/api/chat', async (req, res) => {
     try {
       const { message, history } = req.body;
-      const model = ai.models.generateContent({
-        model: 'gemini-1.5-flash',
-        contents: history ? [...history, { role: 'user', parts: [{ text: message }] }] : message
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: history && history.length > 0 
+          ? [...history, { role: 'user', parts: [{ text: message }] }] 
+          : [{ role: 'user', parts: [{ text: message }] }]
       });
-      const response = await model;
       res.json({ text: response.text });
     } catch (error: any) {
       console.error('Gemini Error:', error);
