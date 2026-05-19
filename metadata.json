@@ -1,0 +1,6 @@
+{
+  "name": "CodeBot",
+  "description": "An AI coding assistant that lets users write code, ask programming questions, and preview web snippets directly on their mobile device.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
