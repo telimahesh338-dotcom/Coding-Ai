@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  dummy: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         run: echo "GEMINI_API_KEY=dummy" > local.properties
 
       - name: Build with Gradle
-        run: gradle assembleDebug --stacktrace --info
+        run: gradle assembleDebug --stacktrace --info --no-daemon
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
