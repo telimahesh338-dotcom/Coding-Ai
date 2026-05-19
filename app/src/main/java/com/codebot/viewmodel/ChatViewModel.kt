@@ -43,29 +43,44 @@ class ChatViewModel @Inject constructor(
             val lang = match.groupValues[1]
             val content = match.groupValues[2]
             
-            // Try to find a filename hint in the previous few lines or within the code
-            // Look for patterns like "File: filename.ext" or "// filename.ext"
+            // Advanced filename extraction
+            // 1. Look for @file: path/name.ext 
+            // 2. Look for // Path: path/name.ext
+            // 3. Look for "File: name.ext" in surrounding text
+            
             var fileName = "snippet_${System.currentTimeMillis()}.$lang"
             
-            if (lang == "html" || content.contains("<!DOCTYPE html>")) fileName = "index.html"
-            else if (lang == "javascript" || lang == "js") fileName = "script.js"
-            else if (lang == "css") fileName = "styles.css"
-            
-            // Check for file hint in the first line of content
-            val firstLine = content.lineSequence().firstOrNull() ?: ""
-            if (firstLine.contains("/") || firstLine.contains(".")) {
-                val potentialName = firstLine.replace("//", "").replace("/*", "").replace("*", "").trim()
-                if (potentialName.contains(".")) {
-                    fileName = potentialName
+            // Check for annotations in the first 3 lines of code
+            val lines = content.lineSequence().take(3).toList()
+            for (line in lines) {
+                val cleanLine = line.trim()
+                if (cleanLine.contains("/") || cleanLine.contains(".")) {
+                    val potential = cleanLine
+                        .replace("//", "")
+                        .replace("/*", "")
+                        .replace("*", "")
+                        .replace("@file:", "")
+                        .replace("Path:", "")
+                        .trim()
+                    
+                    if (potential.contains(".") && !potential.contains(" ")) {
+                        fileName = potential
+                        break
+                    }
                 }
             }
+
+            if (lang == "html" && fileName.startsWith("snippet")) fileName = "index.html"
 
             viewModelScope.launch {
                 dao.saveFile(com.codebot.data.CodeFile(
                     name = fileName.substringAfterLast("/"),
                     content = content,
                     extension = fileName.substringAfterLast(".", lang),
-                    path = if (fileName.contains("/")) "/${fileName.substringBeforeLast("/")}/" else "/"
+                    path = if (fileName.contains("/")) {
+                         val p = fileName.substringBeforeLast("/")
+                         if (p.startsWith("/")) p else "/$p"
+                    } else "/"
                 ))
             }
         }
