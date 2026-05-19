@@ -69,6 +69,39 @@ export default function App() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Auto-extraction logic: Extract code from model output
+  const extractAndAutoSave = (text: string) => {
+    const codeBlockRegex = /```(\w+)\n([\s\S]*?)```/g;
+    let match;
+    const newFiles = [...files];
+    let updated = false;
+
+    while ((match = codeBlockRegex.exec(text)) !== null) {
+      const lang = match[1];
+      const content = match[2];
+      
+      // Heuristic for naming
+      let fileName = 'styles.css';
+      if (lang === 'html' || content.includes('<!DOCTYPE html>')) fileName = 'index.html';
+      else if (lang === 'javascript' || lang === 'js') fileName = 'script.js';
+      else if (lang === 'typescript' || lang === 'ts') fileName = 'app.ts';
+      else fileName = `code_${newFiles.length}.${lang}`;
+
+      const existingIndex = newFiles.findIndex(f => f.name === fileName);
+      if (existingIndex > -1) {
+        newFiles[existingIndex] = { ...newFiles[existingIndex], content };
+      } else {
+        newFiles.push({ name: fileName, content, language: lang });
+      }
+      updated = true;
+    }
+
+    if (updated) {
+      setFiles(newFiles);
+      console.log('Automated: Files updated/created from AI response.');
+    }
+  };
+
   const handleSend = async () => {
     if (!input.trim() || loading) return;
 
@@ -86,20 +119,11 @@ export default function App() {
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'model', content: data.text }]);
 
-      // Check if response contains code blocks to extract
-      const codeBlockRegex = /```(\w+)\n([\s\S]*?)```/g;
-      let match;
-      while ((match = codeBlockRegex.exec(data.text)) !== null) {
-        const lang = match[1];
-        const content = match[2];
-        const fileName = prompt(`Found ${lang} code. Give it a file name:`, `style.${lang === 'javascript' ? 'js' : lang === 'typescript' ? 'ts' : lang === 'html' ? 'html' : 'css'}`);
-        if (fileName) {
-          setFiles(prev => [...prev, { name: fileName, content, language: lang }]);
-        }
-      }
+      // Automation: Extract and save files without copy-paste
+      extractAndAutoSave(data.text);
 
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'model', content: "Sorry, something went wrong. Please check your API key." }]);
+      setMessages(prev => [...prev, { role: 'model', content: "Automation Error: Connection failed. Check your API setup." }]);
     } finally {
       setLoading(false);
     }
