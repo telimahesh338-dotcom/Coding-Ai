@@ -41,6 +41,12 @@ android {
         compose = true
         buildConfig = true
     }
+
+    /*
+     * To use a real Gemini API key:
+     * 1. Add GEMINI_API_KEY=your_key to local.properties
+     * 2. The secrets-gradle-plugin will make it available as BuildConfig.GEMINI_API_KEY
+     */
 }
 
 dependencies {

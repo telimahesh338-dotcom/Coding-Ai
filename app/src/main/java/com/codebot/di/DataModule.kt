@@ -32,10 +32,16 @@ object DataModule {
     @Provides
     @Singleton
     fun provideGenerativeModel(): GenerativeModel {
-        // In a real app, you'd get this from BuildConfig or a secure store
+        // The secrets-gradle-plugin provides this from local.properties or env vars
+        val apiKey = try {
+            com.codebot.BuildConfig.GEMINI_API_KEY
+        } catch (e: Exception) {
+            "YOUR_API_KEY_HERE"
+        }
+        
         return GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey = "YOUR_API_KEY_HERE"
+            apiKey = apiKey
         )
     }
 }
